@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[3]:
 
 import re
 import pandas as pd
@@ -12,7 +11,6 @@ from textblob import TextBlob
 from datetime import datetime
 from sklearn.feature_extraction.text import TfidfTransformer, CountVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-# In[1]:
 
 
 def number_of_lines(df, column_name):
@@ -46,9 +44,6 @@ def number_of_lines(df, column_name):
     return df
 
 
-# In[2]:
-
-
 def remove_new_lines(df, column_name):
     """
     Removes new lines from a specified column of a DataFrame.
@@ -79,7 +74,6 @@ def remove_new_lines(df, column_name):
     return df
 
 
-# In[4]:
 
 
 def tokenize_column(df, column_name, language='en'):
@@ -121,7 +115,6 @@ def tokenize_column(df, column_name, language='en'):
     return df
 
 
-# In[5]:
 
 
 def lowercase_column(df, column_name):
@@ -154,7 +147,6 @@ def lowercase_column(df, column_name):
     return df
 
 
-# In[6]:
 
 
 from nltk.corpus import stopwords
@@ -211,9 +203,6 @@ def remove_stopwords(df, column_name, language='en'):
     return df
 
 
-# In[7]:
-
-
 from nltk.stem import SnowballStemmer
 
 def map_tokens_to_stems(df, column_name):
@@ -248,7 +237,6 @@ def map_tokens_to_stems(df, column_name):
     return df
 
 
-# In[8]:
 
 
 def calculate_stem_word_count(df, column_name, new_column_name='n_stems_en'):
@@ -268,3 +256,64 @@ def calculate_stem_word_count(df, column_name, new_column_name='n_stems_en'):
 
     return df
 
+import random
+
+def delete_songs_by_artist(df, artist_name, num_songs_to_delete):
+    """
+    Deletes a specified number of songs by the given artist from the DataFrame.
+
+    Args:
+        df (DataFrame): The DataFrame containing the songs.
+        artist_name (str): The name of the artist whose songs will be deleted.
+        num_songs_to_delete (int): The number of songs to delete.
+
+    Returns:
+        DataFrame: A DataFrame containing the deleted songs.
+
+    Raises:
+        ValueError: If the specified artist_name does not exist in the DataFrame.
+        ValueError: If the number of songs to delete is greater than the total number of songs by the artist.
+
+    Example:
+        df = pd.DataFrame({'Song': ['Song 1', 'Song 2', 'Song 3', 'Song 4'],
+                           'Artist': ['Artist A', 'Artist B', 'Artist A', 'Artist C']})
+
+        deleted_songs = delete_songs_by_artist(df, 'Artist A', 2)
+        # Resulting DataFrame (df):
+        #    Song    Artist
+        # 1  Song 2  Artist B
+        # 3  Song 4  Artist C
+
+        # Resulting DataFrame (deleted_songs):
+        #    Song    Artist
+        # 0  Song 1  Artist A
+        # 2  Song 3  Artist A
+    """
+    # Check if the artist_name exists in the DataFrame
+    if artist_name not in df['Artist'].unique():
+        raise ValueError(f"Artist '{artist_name}' does not exist in the DataFrame.")
+
+    # Filter the DataFrame to select songs by the specified artist
+    artist_songs = df[df['Artist'] == artist_name]
+
+    # Check if the number of songs to delete is valid
+    if num_songs_to_delete > len(artist_songs):
+        raise ValueError(f"The number of songs to delete is greater than the total number of songs by {artist_name}.")
+
+    # Randomly select songs to delete
+    songs_to_delete = random.sample(artist_songs.index.tolist(), num_songs_to_delete)
+
+    # Create a new DataFrame to store the deleted songs
+    deleted_songs = df.loc[songs_to_delete].copy()
+
+    # Delete the selected songs from the original DataFrame
+    df = df.drop(songs_to_delete)
+
+    return df,deleted_songs
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+def tf_idf_extraction(df):
+    vectorizer = TfidfVectorizer()
+    tf_idf_df=vectorizer.fit_transform(df)
+    return tf_idf_df
+    
