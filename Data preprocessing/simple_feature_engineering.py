@@ -311,6 +311,7 @@ def delete_songs_by_artist(df, artist_name, num_songs_to_delete):
 
     return df,deleted_songs
 
+
 from sklearn.feature_extraction.text import TfidfVectorizer
 def tf_idf_extraction(df):
     vectorizer = TfidfVectorizer()
